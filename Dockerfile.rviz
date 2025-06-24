@@ -1,0 +1,22 @@
+FROM ros:jazzy-ros-core
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt update && apt install -y \
+        ros-jazzy-rviz2 \
+        openssh-server \
+        xauth \
+        augeas-tools && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /var/run/sshd && \
+    augtool -s 'set /files/etc/ssh/sshd_config/PermitRootLogin yes' && \
+    augtool -s 'set /files/etc/ssh/sshd_config/X11Forwarding yes' 
+
+# needed because ~/.ssh/authorized_keys bind-mounted from host
+# is owned by user, not root user (which is the owner of /root/.ssh/authorized_keys)
+RUN augtool -s 'set /files/etc/ssh/sshd_config/StrictModes no'
+
+CMD ["/usr/sbin/sshd", "-D", "-e"]
+
+# CMD rviz2

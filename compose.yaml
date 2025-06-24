@@ -1,0 +1,10 @@
+services:
+  rviz:
+    build:
+      dockerfile: Dockerfile.rviz
+    volumes:
+      - ./authorized_keys:/root/.ssh/authorized_keys:ro
+    ports:
+      - 127.0.0.1:2222:22
+
+
